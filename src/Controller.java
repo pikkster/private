@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 class Controller {
     //enables usage without model or view gets broken
@@ -52,11 +53,20 @@ class Controller {
             //System.out.println("Got access to door: " + model.getEntList().get(random_door).getName());
             //System.out.println("Person who accessed door: " + model.getAllStudents().get(rand).getName());
             //System.out.println("Private key: " + model.getAllStudents().get(rand).getPrivate_key());
-            model.getMainJsonObject();
+            //model.getMainJsonObject();
 
             logString = "Got access to door: " + model.getEntList().get(random_door).getName() +
                     "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
                     "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
+
+            long millis = System.currentTimeMillis();
+            long days = TimeUnit.MILLISECONDS.toDays(millis);
+            System.out.println(days);
+            model.inputNewDateLog(Long.toString(days));
+
+            model.inputLog(Long.toString(days),
+                    model.getAllStudents().get(rand).getName(),
+                    Long.toString(TimeUnit.MILLISECONDS.toMinutes(millis)));
 
             model.getEntList().get(random_door).setState(true);
             changeColor(model.getEntList().get(random_door), rand);
@@ -67,9 +77,18 @@ class Controller {
             logString = "Denied access to door: " + model.getEntList().get(random_door).getName() +
                     "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
                     "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
-            model.getMainJsonObject();
+            //model.getMainJsonObject();
+
+            long millis = System.currentTimeMillis();
+            long days = TimeUnit.MILLISECONDS.toDays(millis);
+            model.inputNewDateLog(Long.toString(days));
+
+            model.inputLog(Long.toString(days),
+                    model.getAllStudents().get(rand).getName(),
+                    Long.toString(TimeUnit.MILLISECONDS.toHours(millis)));
 
             model.getEntList().get(random_door).setState(false);
+
             changeColor(model.getEntList().get(random_door), rand);
         }
         model.addLog(logString);

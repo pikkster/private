@@ -30,7 +30,6 @@ class Model {
         listOfKeys  = new HashMap();
         logs = new ArrayList<>();
         mainJsonObject = new JSONObject().put("Logs", new JSONObject());
-        //System.out.println(mainJsonObject.toString());
     }
 
     //logging system
@@ -49,13 +48,23 @@ class Model {
     }
 
     void getMainJsonObject() {
-        String tempKey = "Event " + temp++;
-        String tempValue = "value" + temp;
-        mainJsonObject.getJSONObject("Logs").put("2018-16-11",new JSONObject());
-        for (int i = 0; i < 24; i++) {
-            mainJsonObject.getJSONObject("Logs").getJSONObject("2018-16-11").put(Integer.toString(i),new JSONObject());
+        //mainJsonObject.getJSONObject("Logs").put("2018-16-11",new JSONObject());
+        //JSONObject daily = mainJsonObject.getJSONObject("Logs").getJSONObject("2018-16-11");
+        for (int i = 1; i <= 24; i++) {
+            //daily.put(Integer.toString(i), new JSONObject());
         }
-        System.out.println(mainJsonObject.toString(4));
+        //System.out.println(mainJsonObject.toString(2));
+    }
+
+    void inputNewDateLog (String date) {
+        mainJsonObject.getJSONObject("Logs").put(date, new JSONObject());
+        //System.out.println(mainJsonObject.toString(2)+ " \n\n");
+
+    }
+
+    void inputLog(String date, String event, String time) {
+        mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,event);
+        System.out.println(mainJsonObject.toString(2)+ " \n");
     }
 
 
