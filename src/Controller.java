@@ -2,25 +2,34 @@ import AccessPoints.Door;
 import Person.Student;
 import Visual.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 class Controller {
     //enables usage without model or view gets broken
     private View view;
     private Model model;
-    private int logToFetch = 0;
+
+    DateTimeFormatter dtf;
 
     Controller(){
 
         view = new View(this);
         model = new Model();
+
         createPersons();
         model.importEntities("files/locationsForEnt");
 
+
+        //format time
+        dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+        //only for simulation
         startTimerForSimulation();
     }
 
@@ -50,42 +59,30 @@ class Controller {
         String logString;
 
         if(model.getEntList().get(random_door).getAccess(model.getAllStudents().get(rand))) {
-            //System.out.println("Got access to door: " + model.getEntList().get(random_door).getName());
-            //System.out.println("Person who accessed door: " + model.getAllStudents().get(rand).getName());
-            //System.out.println("Private key: " + model.getAllStudents().get(rand).getPrivate_key());
-            //model.getMainJsonObject();
-
             logString = "Got access to door: " + model.getEntList().get(random_door).getName() +
                     "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
                     "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
 
-            long millis = System.currentTimeMillis();
-            long days = TimeUnit.MILLISECONDS.toDays(millis);
-            System.out.println(days);
-            model.inputNewDateLog(Long.toString(days));
+            LocalDateTime current = LocalDateTime.now();
+            LocalDate date1 = current.toLocalDate();
 
-            model.inputLog(Long.toString(days),
+            model.inputLog(String.valueOf(date1),
                     model.getAllStudents().get(rand).getName(),
-                    Long.toString(TimeUnit.MILLISECONDS.toMinutes(millis)));
+                    LocalTime.now().format(dtf));
 
             model.getEntList().get(random_door).setState(true);
             changeColor(model.getEntList().get(random_door), rand);
         } else {
-            //System.out.println("Denied access to door: " + model.getEntList().get(random_door).getName());
-            //System.out.println("Person who accessed door: " + model.getAllStudents().get(rand).getName());
-            //System.out.println("Private key: " + model.getAllStudents().get(rand).getPrivate_key());
             logString = "Denied access to door: " + model.getEntList().get(random_door).getName() +
                     "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
                     "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
-            //model.getMainJsonObject();
 
-            long millis = System.currentTimeMillis();
-            long days = TimeUnit.MILLISECONDS.toDays(millis);
-            model.inputNewDateLog(Long.toString(days));
+            LocalDateTime current = LocalDateTime.now();
+            LocalDate date1 = current.toLocalDate();
 
-            model.inputLog(Long.toString(days),
+            model.inputLog(String.valueOf(date1),
                     model.getAllStudents().get(rand).getName(),
-                    Long.toString(TimeUnit.MILLISECONDS.toHours(millis)));
+                    LocalTime.now().format(dtf));
 
             model.getEntList().get(random_door).setState(false);
 
@@ -157,12 +154,10 @@ class Controller {
         }
     }
 
+    //fetches latest log and adding it to output text
     void contrAddLogToview() {
         view.addLogToOutput(model.getLatestLog());
-        //String log = model.getLogsList().get(logToFetch++);
-        //view.addLogToOutput(log);
     }
-
 
 
     //not useful in final

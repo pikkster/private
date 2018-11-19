@@ -1,5 +1,8 @@
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +10,9 @@ import java.util.Map;
 
 import AccessPoints.*;
 import Person.*;
+import com.oracle.tools.packager.IOUtils;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 class Model {
 
@@ -28,8 +33,13 @@ class Model {
         entities = new ArrayList<>();
         listOfPersons = new ArrayList<>();
         listOfKeys  = new HashMap();
+
         logs = new ArrayList<>();
+
+
         mainJsonObject = new JSONObject().put("Logs", new JSONObject());
+        LocalDateTime current = LocalDateTime.now();
+        mainJsonObject.getJSONObject("Logs").put(current.toLocalDate().toString(),new JSONObject());
     }
 
     //logging system
@@ -48,25 +58,18 @@ class Model {
     }
 
     void getMainJsonObject() {
-        //mainJsonObject.getJSONObject("Logs").put("2018-16-11",new JSONObject());
-        //JSONObject daily = mainJsonObject.getJSONObject("Logs").getJSONObject("2018-16-11");
-        for (int i = 1; i <= 24; i++) {
-            //daily.put(Integer.toString(i), new JSONObject());
-        }
-        //System.out.println(mainJsonObject.toString(2));
+        //not used
     }
 
     void inputNewDateLog (String date) {
-        mainJsonObject.getJSONObject("Logs").put(date, new JSONObject());
-        //System.out.println(mainJsonObject.toString(2)+ " \n\n");
+        //for each day create new date jsonobject
 
     }
 
     void inputLog(String date, String event, String time) {
         mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,event);
-        System.out.println(mainJsonObject.toString(2)+ " \n");
+//        System.out.println(mainJsonObject.toString(2)+ " \n");
     }
-
 
     //for creating entitys aka getAllEntities.
     Door createNewEntity(String name, int id, String location, int x, int y) {
@@ -162,19 +165,24 @@ class Model {
     }
 
     //used to import all standard entities
-    public void importEntities(String file) {
+    void importEntities(String file) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
+            JSONTokener jsonTokener = new JSONTokener(new FileReader(file));
+
+            System.out.println(jsonTokener.toString());
             String line;
             while ((line = br.readLine()) != null) {
-                String[] temp = line.split(",");
-                //System.out.println(temp[0] + " " + temp[1] + " " + temp[2] + " " + temp[3] + " " + temp[4] + "\n");
-                Door door = new Door(temp[0],
+
+         /*       String[] temp = line.split(",");
+//                System.out.println(temp[0] + " " + temp[1] + " " + temp[2] + " " + temp[3] + " " + temp[4] + "\n");
+                Door door = new Door(
+                        temp[0],
                         Integer.parseInt(temp[1]),
                         temp[2],
                         Integer.parseInt(temp[3]),
                         Integer.parseInt(temp[4]));
-                entities.add(door);
+                entities.add(door);*/
             }
             br.close();
         } catch (Exception e) {

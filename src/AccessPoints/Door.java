@@ -30,6 +30,13 @@ public class Door extends JPanel implements Entity {
         this.access = new ArrayList<>();
     }
 
+    public int getX() {
+        return x1;
+    }
+    public int getY () {
+        return y1;
+    }
+
     public void setState(boolean state) {
         this.state = state;
     }

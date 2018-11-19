@@ -68,7 +68,7 @@ class View extends JFrame {
         this.setVisible(true);
     }
 
-    public void VIEW_UPDATER() {
+    void VIEW_UPDATER() {
         RIGHTPANEL.revalidate();
         RIGHTPANEL.repaint();
     }
@@ -120,9 +120,9 @@ class View extends JFrame {
         newInsertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("Entity List Size : " + contr.getEntityList().size() + " index : " + i);
                 RIGHTPANEL.add(contr.getEntityList().get(i++));
-                RIGHTPANEL.revalidate();
-                RIGHTPANEL.repaint();
+                VIEW_UPDATER();
             }
         });
         return newInsertButton;
@@ -207,8 +207,7 @@ class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 promptForNewEntity();
-                RIGHTPANEL.revalidate();
-                RIGHTPANEL.repaint();
+                VIEW_UPDATER();
             }
         });
         menu2.add(menuItem);
