@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,11 @@ class Model {
         listOfPersons = new ArrayList<>();
         listOfKeys  = new HashMap();
         logs = new ArrayList<>();
+
         mainJsonObject = new JSONObject().put("Logs", new JSONObject());
+        LocalDateTime currentTime = LocalDateTime.now();
+        mainJsonObject.getJSONObject("Logs").put(currentTime.toLocalDate().toString(), new JSONObject());
+
     }
 
     //logging system
@@ -41,29 +46,31 @@ class Model {
         for debugging in case log file goes crazy
          */
         //System.out.println("\n"+logs.size()+"\n"+log);
+
+
+
         logs.add(log);
     }
     String getLatestLog() {
         return logs.get(logs.size()-1);
     }
 
-    void getMainJsonObject() {
-        //mainJsonObject.getJSONObject("Logs").put("2018-16-11",new JSONObject());
-        //JSONObject daily = mainJsonObject.getJSONObject("Logs").getJSONObject("2018-16-11");
-        for (int i = 1; i <= 24; i++) {
-            //daily.put(Integer.toString(i), new JSONObject());
-        }
-        //System.out.println(mainJsonObject.toString(2));
-    }
-
     void inputNewDateLog (String date) {
-        mainJsonObject.getJSONObject("Logs").put(date, new JSONObject());
-        //System.out.println(mainJsonObject.toString(2)+ " \n\n");
-
+        //not used at the moment, to be...
     }
 
-    void inputLog(String date, String event, String time) {
-        mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,event);
+    void inputLog(String date, Student event, String time, Door door, boolean granted) {
+
+        mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,new JSONObject());
+
+        JSONObject temp = mainJsonObject.getJSONObject("Logs").getJSONObject(date).getJSONObject(time);
+        temp.put("Door", door.getName());
+        temp.put("Door-ID", door.getId());
+        temp.put("Door-key", door.getKey());
+        temp.put("Granted", granted);
+        temp.put("Name",event.getName());
+        temp.put("Id", event.getID());
+        temp.put("Private Key", event.getPrivate_key());
         System.out.println(mainJsonObject.toString(2)+ " \n");
     }
 

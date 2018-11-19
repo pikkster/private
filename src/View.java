@@ -1,3 +1,4 @@
+import AccessPoints.Door;
 import Visual.RightPanel;
 
 import javax.swing.*;
@@ -228,6 +229,7 @@ class View extends JFrame {
 
         return newJMenuBar;
     }
+
     void addLogToOutput(String log) {
         if(LOGGING) {
             outputTextArea.append(log);
