@@ -121,7 +121,11 @@ class View extends JFrame {
         newInsertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RIGHTPANEL.add(contr.getEntityList().get(i++));
+                try {
+                    RIGHTPANEL.add(contr.getEntityList().get(i++));
+                } catch (Exception wi) {
+                    //
+                }
                 RIGHTPANEL.revalidate();
                 RIGHTPANEL.repaint();
             }
@@ -219,6 +223,7 @@ class View extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 outputTextArea.setText("OUTPUTS ALL ENTITIES");
                 outputTextArea.setText(contr.getEntitiesAsString());
+                LOGGING = false;
             }
         });
         menu2.add(menuItem);
@@ -344,6 +349,7 @@ class View extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             outputTextArea.setText(contr.getStudentByIDNAME(searchField.getText()));
+            LOGGING = false;
         }
     }
 }

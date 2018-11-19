@@ -89,7 +89,6 @@ class Controller {
 
             changeColor(model.getEntList().get(random_door), rand);
         }
-        model.addLog(logString);
         contrAddLogToview();
     }
     /*

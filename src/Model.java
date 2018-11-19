@@ -8,6 +8,7 @@ import java.util.Map;
 
 import AccessPoints.*;
 import Person.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 class Model {
@@ -22,6 +23,7 @@ class Model {
     private List<String> logs;
     //jsonobject to keep store of all logs
     private JSONObject mainJsonObject;
+    private JSONObject jsonLogs;
     int temp = 0;
 
     //CONSTRUCTOR
@@ -41,15 +43,21 @@ class Model {
     List<String> getLogsList() {
         return logs;
     }
-    public void addLog(String log) {
+    public void addLog(JSONObject timeLog) {
         /*
         for debugging in case log file goes crazy
          */
         //System.out.println("\n"+logs.size()+"\n"+log);
+        //System.out.println(timeLog.toString(2));
 
-
-
-        logs.add(log);
+        logs.add("Door: "+ timeLog.get("Door").toString() + "\n" +
+                "Door-ID: "+ timeLog.get("Door-ID").toString() + "\n" +
+                "Door-key: "+ timeLog.get("Door-key").toString() + "\n" +
+                "Granted: "+ timeLog.get("Granted").toString() + "\n" +
+                "Name: "+ timeLog.get("Name").toString() + "\n" +
+                "ID: "+ timeLog.get("ID").toString() + "\n" +
+                "Private Key: "+ timeLog.get("Private Key").toString() + "\n\n" +
+                "/////////////////////////////\n\n");
     }
     String getLatestLog() {
         return logs.get(logs.size()-1);
@@ -63,15 +71,16 @@ class Model {
 
         mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,new JSONObject());
 
-        JSONObject temp = mainJsonObject.getJSONObject("Logs").getJSONObject(date).getJSONObject(time);
-        temp.put("Door", door.getName());
-        temp.put("Door-ID", door.getId());
-        temp.put("Door-key", door.getKey());
-        temp.put("Granted", granted);
-        temp.put("Name",event.getName());
-        temp.put("Id", event.getID());
-        temp.put("Private Key", event.getPrivate_key());
-        System.out.println(mainJsonObject.toString(2)+ " \n");
+        JSONObject timeLog = mainJsonObject.getJSONObject("Logs").getJSONObject(date).getJSONObject(time);
+        timeLog.put("Door", door.getName());
+        timeLog.put("Door-ID", door.getId());
+        timeLog.put("Door-key", door.getKey());
+        timeLog.put("Granted", granted);
+        timeLog.put("Name",event.getName());
+        timeLog.put("ID", event.getID());
+        timeLog.put("Private Key", event.getPrivate_key());
+        addLog(timeLog);
+        //System.out.println(mainJsonObject.toString(2)+ " \n");
     }
 
 
