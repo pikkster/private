@@ -1,3 +1,4 @@
+import AccessPoints.Door;
 import Visual.RightPanel;
 
 import javax.swing.*;
@@ -68,7 +69,7 @@ class View extends JFrame {
         this.setVisible(true);
     }
 
-    void VIEW_UPDATER() {
+    public void VIEW_UPDATER() {
         RIGHTPANEL.revalidate();
         RIGHTPANEL.repaint();
     }
@@ -120,9 +121,13 @@ class View extends JFrame {
         newInsertButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Entity List Size : " + contr.getEntityList().size() + " index : " + i);
-                RIGHTPANEL.add(contr.getEntityList().get(i++));
-                VIEW_UPDATER();
+                try {
+                    RIGHTPANEL.add(contr.getEntityList().get(i++));
+                } catch (Exception wi) {
+                    //
+                }
+                RIGHTPANEL.revalidate();
+                RIGHTPANEL.repaint();
             }
         });
         return newInsertButton;
@@ -207,7 +212,8 @@ class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 promptForNewEntity();
-                VIEW_UPDATER();
+                RIGHTPANEL.revalidate();
+                RIGHTPANEL.repaint();
             }
         });
         menu2.add(menuItem);
@@ -217,6 +223,7 @@ class View extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 outputTextArea.setText("OUTPUTS ALL ENTITIES");
                 outputTextArea.setText(contr.getEntitiesAsString());
+                LOGGING = false;
             }
         });
         menu2.add(menuItem);
@@ -227,6 +234,7 @@ class View extends JFrame {
 
         return newJMenuBar;
     }
+
     void addLogToOutput(String log) {
         if(LOGGING) {
             outputTextArea.append(log);
@@ -341,6 +349,7 @@ class View extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             outputTextArea.setText(contr.getStudentByIDNAME(searchField.getText()));
+            LOGGING = false;
         }
     }
 }

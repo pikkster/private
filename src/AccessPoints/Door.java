@@ -42,7 +42,7 @@ public class Door extends JPanel implements Entity {
     }
 
     public boolean getState(){
-        return this.state;
+        return state;
     }
     void setKey (int key) {
         this.key = key;

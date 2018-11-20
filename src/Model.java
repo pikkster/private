@@ -8,8 +8,8 @@ import java.util.Map;
 
 import AccessPoints.*;
 import Person.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 class Model {
 
@@ -23,6 +23,7 @@ class Model {
     private List<String> logs;
     //jsonobject to keep store of all logs
     private JSONObject mainJsonObject;
+    private JSONObject jsonLogs;
     int temp = 0;
 
     //CONSTRUCTOR
@@ -30,43 +31,58 @@ class Model {
         entities = new ArrayList<>();
         listOfPersons = new ArrayList<>();
         listOfKeys  = new HashMap();
-
         logs = new ArrayList<>();
 
-
         mainJsonObject = new JSONObject().put("Logs", new JSONObject());
-        LocalDateTime current = LocalDateTime.now();
-        mainJsonObject.getJSONObject("Logs").put(current.toLocalDate().toString(),new JSONObject());
+        LocalDateTime currentTime = LocalDateTime.now();
+        mainJsonObject.getJSONObject("Logs").put(currentTime.toLocalDate().toString(), new JSONObject());
+
     }
 
     //logging system
     List<String> getLogsList() {
         return logs;
     }
-    public void addLog(String log) {
+    public void addLog(JSONObject timeLog) {
         /*
         for debugging in case log file goes crazy
          */
         //System.out.println("\n"+logs.size()+"\n"+log);
-        logs.add(log);
+        //System.out.println(timeLog.toString(2));
+
+        logs.add("Door: "+ timeLog.get("Door").toString() + "\n" +
+                "Door-ID: "+ timeLog.get("Door-ID").toString() + "\n" +
+                "Door-key: "+ timeLog.get("Door-key").toString() + "\n" +
+                "Granted: "+ timeLog.get("Granted").toString() + "\n" +
+                "Name: "+ timeLog.get("Name").toString() + "\n" +
+                "ID: "+ timeLog.get("ID").toString() + "\n" +
+                "Private Key: "+ timeLog.get("Private Key").toString() + "\n\n" +
+                "/////////////////////////////\n\n");
     }
     String getLatestLog() {
         return logs.get(logs.size()-1);
     }
 
-    void getMainJsonObject() {
-        //not used
-    }
-
     void inputNewDateLog (String date) {
-        //for each day create new date jsonobject
-
+        //not used at the moment, to be...
     }
 
-    void inputLog(String date, String event, String time) {
-        mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,event);
-//        System.out.println(mainJsonObject.toString(2)+ " \n");
+    void inputLog(String date, Student event, String time, Door door, boolean granted) {
+
+        mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,new JSONObject());
+
+        JSONObject timeLog = mainJsonObject.getJSONObject("Logs").getJSONObject(date).getJSONObject(time);
+        timeLog.put("Door", door.getName());
+        timeLog.put("Door-ID", door.getId());
+        timeLog.put("Door-key", door.getKey());
+        timeLog.put("Granted", granted);
+        timeLog.put("Name",event.getName());
+        timeLog.put("ID", event.getID());
+        timeLog.put("Private Key", event.getPrivate_key());
+        addLog(timeLog);
+        //System.out.println(mainJsonObject.toString(2)+ " \n");
     }
+
 
     //for creating entitys aka getAllEntities.
     Door createNewEntity(String name, int id, String location, int x, int y) {
@@ -162,24 +178,19 @@ class Model {
     }
 
     //used to import all standard entities
-    void importEntities(String file) {
+    public void importEntities(String file) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            JSONTokener jsonTokener = new JSONTokener(new FileReader(file));
-
-            System.out.println(jsonTokener.toString());
             String line;
             while ((line = br.readLine()) != null) {
-
-         /*       String[] temp = line.split(",");
-//                System.out.println(temp[0] + " " + temp[1] + " " + temp[2] + " " + temp[3] + " " + temp[4] + "\n");
-                Door door = new Door(
-                        temp[0],
+                String[] temp = line.split(",");
+                //System.out.println(temp[0] + " " + temp[1] + " " + temp[2] + " " + temp[3] + " " + temp[4] + "\n");
+                Door door = new Door(temp[0],
                         Integer.parseInt(temp[1]),
                         temp[2],
                         Integer.parseInt(temp[3]),
                         Integer.parseInt(temp[4]));
-                entities.add(door);*/
+                entities.add(door);
             }
             br.close();
         } catch (Exception e) {

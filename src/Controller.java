@@ -7,29 +7,25 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 class Controller {
     //enables usage without model or view gets broken
     private View view;
     private Model model;
 
-    DateTimeFormatter dtf;
+    private DateTimeFormatter dtf;
 
     Controller(){
 
         view = new View(this);
         model = new Model();
-
         createPersons();
         model.importEntities("files/locationsForEnt");
 
-
-        //format time
         dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
-        //only for simulation
         startTimerForSimulation();
     }
 
@@ -63,32 +59,36 @@ class Controller {
                     "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
                     "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
 
-            LocalDateTime current = LocalDateTime.now();
-            LocalDate date1 = current.toLocalDate();
+            LocalDateTime currentTime = LocalDateTime.now();
+            LocalDate date = currentTime.toLocalDate();
 
-            model.inputLog(String.valueOf(date1),
-                    model.getAllStudents().get(rand).getName(),
-                    LocalTime.now().format(dtf));
+            model.inputLog(String.valueOf(date),
+                    model.getAllStudents().get(rand),
+                    LocalTime.now().format(dtf),
+                    model.getEntList().get(random_door),
+                    model.getEntList().get(random_door).getAccess(model.getAllStudents().get(rand)));
 
             model.getEntList().get(random_door).setState(true);
             changeColor(model.getEntList().get(random_door), rand);
+
         } else {
             logString = "Denied access to door: " + model.getEntList().get(random_door).getName() +
                     "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
                     "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
 
-            LocalDateTime current = LocalDateTime.now();
-            LocalDate date1 = current.toLocalDate();
+            LocalDateTime currentTime = LocalDateTime.now();
+            LocalDate date = currentTime.toLocalDate();
 
-            model.inputLog(String.valueOf(date1),
-                    model.getAllStudents().get(rand).getName(),
-                    LocalTime.now().format(dtf));
+            model.inputLog(String.valueOf(date),
+                    model.getAllStudents().get(rand),
+                    LocalTime.now().format(dtf),
+                    model.getEntList().get(random_door),
+                    model.getEntList().get(random_door).getAccess(model.getAllStudents().get(rand)));
 
             model.getEntList().get(random_door).setState(false);
 
             changeColor(model.getEntList().get(random_door), rand);
         }
-        model.addLog(logString);
         contrAddLogToview();
     }
     /*
@@ -154,17 +154,7 @@ class Controller {
         }
     }
 
-    //fetches latest log and adding it to output text
     void contrAddLogToview() {
         view.addLogToOutput(model.getLatestLog());
-    }
-
-
-    //not useful in final
-    void getStudentsKeys() {
-        Map<Long, Student> test = model.generateKeys();
-        for(Map.Entry m : test.entrySet()) {
-            System.out.println(m.getKey() + " " + m.getValue());
-        }
     }
 }
