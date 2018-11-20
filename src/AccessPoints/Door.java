@@ -30,10 +30,10 @@ public class Door extends JPanel implements Entity {
         this.access = new ArrayList<>();
     }
 
-    public int getX() {
+    public int getX_pos() {
         return x1;
     }
-    public int getY () {
+    public int getY_pos() {
         return y1;
     }
 

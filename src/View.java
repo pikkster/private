@@ -42,8 +42,9 @@ class View extends JFrame {
 
         LEFTPANEL = createLeftPanel();
 
-        RIGHTPANEL = new RightPanel(DEFAULT_HEIGHT,DEFAULT_WIDTH);
+        //RIGHTPANEL = new RightPanel(DEFAULT_HEIGHT,DEFAULT_WIDTH);
 
+        RIGHTPANEL = contr.testImport();
         toolbar = createToolbar();
 
         RIGHTPANEL.add(toolbar, BorderLayout.PAGE_END);
