@@ -16,7 +16,7 @@ public class RightPanel extends JPanel {
         super();
         this.WIDTH = DEFAULTWIDTH;
         this.HEIGHT = DEFAULTHEIGHT;
-
+        this.setBackground(Color.white);
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(WIDTH /2, HEIGHT));
     }
@@ -34,15 +34,10 @@ public class RightPanel extends JPanel {
         for (automatic_door AD : entityToPaint) {
             AD.draw(g2);
         }
+    }
 
-
-/*
-        for(Door d : entityToPaint) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setColor(Color.BLUE);
-            g2.fillRect(d.getX_pos(),d.getY_pos(),20,20);
-        }*/
-
-
+    public void clearALl() {
+        entityToPaint.clear();
+        repaint();
     }
 }

@@ -1,4 +1,5 @@
 import AccessPoints.Door;
+import AccessPoints.automatic_door;
 import Visual.RightPanel;
 
 import javax.swing.*;
@@ -6,6 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.GroupLayout.*;
 
 class View extends JFrame {
@@ -42,9 +47,8 @@ class View extends JFrame {
 
         LEFTPANEL = createLeftPanel();
 
-        //RIGHTPANEL = new RightPanel(DEFAULT_HEIGHT,DEFAULT_WIDTH);
+        RIGHTPANEL = new RightPanel(DEFAULT_HEIGHT,DEFAULT_WIDTH);
 
-        RIGHTPANEL = contr.testImport();
         toolbar = createToolbar();
 
         RIGHTPANEL.add(toolbar, BorderLayout.PAGE_END);
@@ -346,6 +350,7 @@ class View extends JFrame {
 
         return TESTPANEL;
     }
+
     class doSearchAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {

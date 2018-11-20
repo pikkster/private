@@ -19,19 +19,15 @@ class Model {
     private List<Student> listOfPersons;
     //list of all keys for future usage
     private Map<Long, Student> listOfKeys;
-    //list of all logs
-    private List<String> logs;
     //jsonobject to keep store of all logs
     private JSONObject mainJsonObject;
-    private JSONObject jsonLogs;
-    int temp = 0;
+    private String tempJSONLOG;
 
     //CONSTRUCTOR
     Model() {
         entities = new ArrayList<>();
         listOfPersons = new ArrayList<>();
         listOfKeys  = new HashMap();
-        logs = new ArrayList<>();
 
         mainJsonObject = new JSONObject().put("Logs", new JSONObject());
         LocalDateTime currentTime = LocalDateTime.now();
@@ -39,30 +35,22 @@ class Model {
 
     }
 
-    //logging system
-    List<String> getLogsList() {
-        return logs;
-    }
-    public void addLog(JSONObject timeLog) {
-        /*
-        for debugging in case log file goes crazy
-         */
-        //System.out.println("\n"+logs.size()+"\n"+log);
+    public void addLog(JSONObject timeLog, String time) {
         //System.out.println(timeLog.toString(2));
 
-        logs.add("Door: "+ timeLog.get("Door").toString() + "\n" +
+        tempJSONLOG = "Time: " + time + "\n" +
+                "Door: "+ timeLog.get("Door").toString() + "\n" +
                 "Door-ID: "+ timeLog.get("Door-ID").toString() + "\n" +
                 "Door-key: "+ timeLog.get("Door-key").toString() + "\n" +
                 "Granted: "+ timeLog.get("Granted").toString() + "\n" +
                 "Name: "+ timeLog.get("Name").toString() + "\n" +
                 "ID: "+ timeLog.get("ID").toString() + "\n" +
                 "Private Key: "+ timeLog.get("Private Key").toString() + "\n\n" +
-                "/////////////////////////////\n\n");
+                "//////////////////////////////////////////\n\n";
     }
-    String getLatestLog() {
-        return logs.get(logs.size()-1);
+    public String getLatestJSONLOG () {
+        return tempJSONLOG;
     }
-
     void inputNewDateLog (String date) {
         //not used at the moment, to be...
     }
@@ -79,7 +67,10 @@ class Model {
         timeLog.put("Name",event.getName());
         timeLog.put("ID", event.getID());
         timeLog.put("Private Key", event.getPrivate_key());
-        addLog(timeLog);
+        addLog(timeLog, time);
+        /*
+            FOR DEBUGGING JSON DATA
+         */
         //System.out.println(mainJsonObject.toString(2)+ " \n");
     }
 

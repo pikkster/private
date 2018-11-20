@@ -25,7 +25,7 @@ class Controller {
         model = new Model();
         model.importEntities("files/locationsForEnt");
 
-        testImport();
+        //testImport();
 
         view = new View(this);
         createPersons();
@@ -160,40 +160,7 @@ class Controller {
         }
     }
 
-    void contrAddLogToview() {
-        view.addLogToOutput(model.getLatestLog());
-    }
-
-    RightPanel testImport () {
-        List<automatic_door> myDoor = new ArrayList<>();
-
-        myDoor.add(new automatic_door("a",1,"aa",20,20,
-                new Rectangle2D.Double(20,20,20,20),
-                Color.YELLOW, new BasicStroke(10)));
-        myDoor.add(new automatic_door("b",2,"bb",360,20,
-                new Rectangle2D.Double(20,20,20,20),
-                Color.YELLOW, new BasicStroke(10)));
-        myDoor.add(new automatic_door("c",3,"cc",20,360,
-                new Rectangle2D.Double(20,20,20,20),
-                Color.YELLOW, new BasicStroke(10)));
-        myDoor.add(new automatic_door("d",4,"dd",360,360,
-                new Rectangle2D.Double(20,20,20,20),
-                Color.YELLOW, new BasicStroke(10)));
-
-        RightPanel rightPanel = new RightPanel(400,400);
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            private int drawCount = 0;
-            @Override
-            public void run() {
-                System.out.println("Doing task");
-                rightPanel.addMyDrawable(myDoor.get(drawCount));
-                drawCount++;
-            }
-        }, 1000, 1000);
-
-        return rightPanel;
-
+    private void contrAddLogToview() {
+        view.addLogToOutput(model.getLatestJSONLOG());
     }
 }
