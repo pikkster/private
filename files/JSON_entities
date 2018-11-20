@@ -1,0 +1,42 @@
+{"Entities":
+    {
+        "Doors":
+        {
+            "Main_entrance":
+            {
+                "Name": "Main_entrance",
+                "ID":   111,
+                "Key":  12345,
+                "Location": "main"
+            },
+            "Side_entrance":
+            {
+                "Name": "Side_entrance",
+                "ID":   222,
+                "Key":  12345,
+                "Location": "side"
+            },
+            "Back_entrance":
+            {
+                "Name": "Back_entrance",
+                "ID":   333,
+                "Key":  12345,
+                "Location": "back"
+            },
+            "Staff_entrance":
+            {
+                "Name": "Staff_entrance",
+                "ID":   444,
+                "Key":  12345,
+                "Location": "Side"
+            },
+            "Fire_EXIT":
+            {
+                "Name": "Fire_EXIT",
+                "ID": 999,
+                "Key": 999,
+                "Location": "Main"
+            }
+        }
+    }
+}

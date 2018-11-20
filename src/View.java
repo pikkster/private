@@ -34,6 +34,7 @@ class View extends JFrame {
     private JTextField searchField;
 
     private int i = 0;
+    //used to stop output to textarea
     private boolean LOGGING = false;
 
     private Object[] options = {"Yes", "No", "Cancel"};
@@ -116,7 +117,7 @@ class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 outputTextArea.setText(contr.getAllStudents());
-
+                LOGGING = false;
             }
         });
         return newInfoButton;
@@ -124,12 +125,14 @@ class View extends JFrame {
     private JButton createInsertButton() {
         JButton newInsertButton = new JButton("+");
         newInsertButton.addActionListener(new ActionListener() {
+            private int getIndex = 0;
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    RIGHTPANEL.add(contr.getEntityList().get(i++));
-                } catch (Exception wi) {
+                if (contr.getEntityList().size() == getIndex) {
                     //
+                } else {
+                    RIGHTPANEL.add(contr.getEntityList().get(getIndex));
+                    getIndex++;
                 }
                 RIGHTPANEL.revalidate();
                 RIGHTPANEL.repaint();

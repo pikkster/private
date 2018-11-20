@@ -15,7 +15,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 class Controller {
-    //enables usage without model or view gets broken
     private View view;
     private Model model;
 
@@ -25,14 +24,18 @@ class Controller {
         model = new Model();
         model.importEntities("files/locationsForEnt");
 
-        //testImport();
-
         view = new View(this);
         createPersons();
 
-
         dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        /*
+            SIMULATION
+         */
         startTimerForSimulation();
+        /*
+
+         */
     }
 
     private void startTimerForSimulation() {
@@ -58,13 +61,8 @@ class Controller {
     private void simulateMovement() {
         int rand = (int)(Math.random()*200);
         int random_door = (int) (Math.random()*model.getEntList().size());
-        String logString;
 
         if(model.getEntList().get(random_door).getAccess(model.getAllStudents().get(rand))) {
-            logString = "Got access to door: " + model.getEntList().get(random_door).getName() +
-                    "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
-                    "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
-
             LocalDateTime currentTime = LocalDateTime.now();
             LocalDate date = currentTime.toLocalDate();
 
@@ -78,10 +76,6 @@ class Controller {
             changeColor(model.getEntList().get(random_door), rand);
 
         } else {
-            logString = "Denied access to door: " + model.getEntList().get(random_door).getName() +
-                    "\nPerson who accessed door: " + model.getAllStudents().get(rand).getName() +
-                    "\nPrivate key: " + model.getAllStudents().get(rand).getPrivate_key()+"\n";
-
             LocalDateTime currentTime = LocalDateTime.now();
             LocalDate date = currentTime.toLocalDate();
 
