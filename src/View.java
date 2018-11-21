@@ -39,7 +39,7 @@ class View extends JFrame {
 
     private Object[] options = {"Yes", "No", "Cancel"};
     private String[] locations = {"", "Main", "Side", "Hall", "Garage"};
-    final static String DO_ACTION = "do-search";
+    private final static String DO_ACTION = "do-search";
 
     View (Controller controller) {
         super();
@@ -116,7 +116,7 @@ class View extends JFrame {
         newInfoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                outputTextArea.setText(contr.getAllStudents());
+                contr.getAllStudentsAsString();
                 LOGGING = false;
             }
         });
@@ -166,12 +166,18 @@ class View extends JFrame {
         });
         menu1.add(menuItem);
         menuItem = new JMenuItem("Save");
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               contr.inputLOG();
+            }
+        });
         menu1.add(menuItem);
         menuItem = new JMenuItem("Log");
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                outputTextArea.setText("");
+                outputTextArea.setText(null);
                 LOGGING = true;
             }
         });
@@ -229,8 +235,7 @@ class View extends JFrame {
         menuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                outputTextArea.setText("OUTPUTS ALL ENTITIES");
-                outputTextArea.setText(contr.getEntitiesAsString());
+                contr.getEntitiesAsString();
                 LOGGING = false;
             }
         });
@@ -242,7 +247,10 @@ class View extends JFrame {
 
         return newJMenuBar;
     }
+    void addDataToOutputText (String data) {
+        outputTextArea.setText(data);
 
+    }
     void addLogToOutput(String log) {
         if(LOGGING) {
             outputTextArea.append(log);
@@ -296,7 +304,7 @@ class View extends JFrame {
         doSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                outputTextArea.setText(contr.getStudentByIDNAME(searchField.getText()));
+                contr.getStudentByIDNAME(searchField.getText());
             }
         });
 
@@ -357,7 +365,7 @@ class View extends JFrame {
     class doSearchAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            outputTextArea.setText(contr.getStudentByIDNAME(searchField.getText()));
+            contr.getStudentByIDNAME(searchField.getText());
             LOGGING = false;
         }
     }

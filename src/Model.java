@@ -1,5 +1,6 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +9,9 @@ import java.util.Map;
 
 import AccessPoints.*;
 import Person.*;
-import org.json.JSONArray;
 import org.json.JSONObject;
+
+import static org.json.JSONObject.getNames;
 
 class Model {
 
@@ -20,8 +22,9 @@ class Model {
     //list of all keys for future usage
     private Map<Long, Student> listOfKeys;
     //jsonobject to keep store of all logs
-    private JSONObject mainJsonObject;
-    private String tempJSONLOG;
+    private JSONObject mainJSONLog;
+    private String outputJSONLOG;
+    private JSONObject entitiesJSONdata;
 
     //CONSTRUCTOR
     Model() {
@@ -29,16 +32,16 @@ class Model {
         listOfPersons = new ArrayList<>();
         listOfKeys  = new HashMap();
 
-        mainJsonObject = new JSONObject().put("Logs", new JSONObject());
+        mainJSONLog = new JSONObject().put("Logs", new JSONObject());
         LocalDateTime currentTime = LocalDateTime.now();
-        mainJsonObject.getJSONObject("Logs").put(currentTime.toLocalDate().toString(), new JSONObject());
+        mainJSONLog.getJSONObject("Logs").put(currentTime.toLocalDate().toString(), new JSONObject());
 
     }
 
     public void addLog(JSONObject timeLog, String time) {
         //System.out.println(timeLog.toString(2));
 
-        tempJSONLOG = "Time: " + time + "\n" +
+        outputJSONLOG = "Time: " + time + "\n" +
                 "Door: "+ timeLog.get("Door").toString() + "\n" +
                 "Door-ID: "+ timeLog.get("Door-ID").toString() + "\n" +
                 "Door-key: "+ timeLog.get("Door-key").toString() + "\n" +
@@ -48,18 +51,35 @@ class Model {
                 "Private Key: "+ timeLog.get("Private Key").toString() + "\n\n" +
                 "//////////////////////////////////////////\n\n";
     }
-    public String getLatestJSONLOG () {
-        return tempJSONLOG;
+    String getLatestJSONLOG () {
+        return outputJSONLOG;
     }
+    void appendLogToFile (String date) {
+        try {
+            BufferedWriter out = new BufferedWriter(
+                    new FileWriter("files/temp_logs",true));
+            out.write("test String\na$$\n" + date);
+            out.close();
+        } catch (Exception we) {
+            //
+        }
+    }
+
+    private void searchLogFiles() {
+        //searcg log folder to find .json with correct date and then call appendToLogFile()
+    }
+
     void inputNewDateLog (String date) {
         //not used at the moment, to be...
+
+        appendLogToFile(date);
     }
 
     void inputLog(String date, Student event, String time, Door door, boolean granted) {
 
-        mainJsonObject.getJSONObject("Logs").getJSONObject(date).put(time,new JSONObject());
+        mainJSONLog.getJSONObject("Logs").getJSONObject(date).put(time,new JSONObject());
 
-        JSONObject timeLog = mainJsonObject.getJSONObject("Logs").getJSONObject(date).getJSONObject(time);
+        JSONObject timeLog = mainJSONLog.getJSONObject("Logs").getJSONObject(date).getJSONObject(time);
         timeLog.put("Door", door.getName());
         timeLog.put("Door-ID", door.getId());
         timeLog.put("Door-key", door.getKey());
@@ -71,7 +91,7 @@ class Model {
         /*
             FOR DEBUGGING JSON DATA
          */
-        //System.out.println(mainJsonObject.toString(2)+ " \n");
+        //System.out.println(mainJSONLog.toString(2)+ " \n");
     }
 
 
@@ -102,7 +122,6 @@ class Model {
             int id_number = 0;
             while ((line = br.readLine()) != null) {
                 Student student = new Student(line,++id_number);
-                student.setPrivate_key();
                 listOfPersons.add(student);
             }
             br.close();
@@ -133,6 +152,18 @@ class Model {
         }
         return String.valueOf(sb);
     }
+    String createAllStudentsString () {
+        StringBuilder sb = new StringBuilder();
+        for (Student s : getAllStudents()) {
+            sb.append("Name: ")
+                    .append(s.getName())
+                    .append("\nID: ")
+                    .append(s.getID())
+                    .append("\n-------------------\n");
+        }
+        return String.valueOf(sb);
+    }
+
 
     //for searching or retreiving
     String searchStudentList (String id_name) {
@@ -158,34 +189,33 @@ class Model {
         }
         return String.valueOf(sb);
     }
-
-    //used to create personal keys
-    Map<Long, Student> generateKeys () {
-        for (Student s : listOfPersons) {
-            s.setPrivate_key();
-            listOfKeys.put(s.getPrivate_key(), s);
-        }
-        return listOfKeys;
-    }
-
-    //used to import all standard entities
-    public void importEntities(String file) {
+    //read and create json entities file
+    void jsonEntities (String file) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] temp = line.split(",");
-                //System.out.println(temp[0] + " " + temp[1] + " " + temp[2] + " " + temp[3] + " " + temp[4] + "\n");
-                Door door = new Door(temp[0],
-                        Integer.parseInt(temp[1]),
-                        temp[2],
-                        Integer.parseInt(temp[3]),
-                        Integer.parseInt(temp[4]));
-                entities.add(door);
-            }
-            br.close();
+            String content = new String(Files.readAllBytes(Paths.get(file)));
+            entitiesJSONdata = new JSONObject(content);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        createEntitiesAtStart();
     }
+    //create entities at start
+    private void createEntitiesAtStart () {
+        String[] jsonData = getNames(entitiesJSONdata
+                .getJSONObject("Entities")
+                .getJSONObject("Doors"));
+        for(String s : jsonData) {
+            JSONObject newDoor = entitiesJSONdata.getJSONObject("Entities")
+                    .getJSONObject("Doors").getJSONObject(s);
+
+            Door door = new Door(
+                    newDoor.getString("Name"),
+                    newDoor.getInt("ID"),
+                    newDoor.getString("Location"),
+                    newDoor.getInt("X-pos"),
+                    newDoor.getInt("Y-pos"));
+            entities.add(door);
+        }
+    }
+
 }

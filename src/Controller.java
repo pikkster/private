@@ -1,15 +1,10 @@
 import AccessPoints.Door;
-import AccessPoints.automatic_door;
-import Person.Student;
 import Visual.*;
 
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,7 +17,7 @@ class Controller {
 
     Controller(){
         model = new Model();
-        model.importEntities("files/locationsForEnt");
+        model.jsonEntities("files/JSONentities");
 
         view = new View(this);
         createPersons();
@@ -39,10 +34,6 @@ class Controller {
     }
 
     private void startTimerForSimulation() {
-
-        /*
-        ONLY FOR SIMULATION not efficient
-         */
         for(Door d : model.getEntList()) {
             for(int i = 0; i < 100;i++) {
                 d.setAccess(model.getAllStudents().get(i));
@@ -91,28 +82,19 @@ class Controller {
         }
         contrAddLogToview();
     }
-    /*
-    END OF SIMULATION
-     */
-
     //used for creating any data at all
     private void createPersons() {
         model.createNewPerson();
     }
+    /*
+    END OF SIMULATION
+     */
     //returns a string with all students
-    String getAllStudents() {
-        StringBuilder sb = new StringBuilder();
-        for (Student s : model.getAllStudents()) {
-            sb.append("Name: ")
-                    .append(s.getName())
-                    .append("\nID: ")
-                    .append(s.getID())
-                    .append("\n-------------------\n");
-        }
-        return String.valueOf(sb);
+    void getAllStudentsAsString() {
+        view.addDataToOutputText(model.createAllStudentsString());
     }
-    String getEntitiesAsString() {
-        return model.getAllEntities();
+    void getEntitiesAsString() {
+        view.addDataToOutputText(model.getAllEntities());
     }
     List<Door> getEntityList() {
         return model.getEntList();
@@ -144,17 +126,21 @@ class Controller {
         return new PaintImage();
     }
     //Search from UI to get a Person
-    String getStudentByIDNAME(String id) {
+    void getStudentByIDNAME(String id) {
         if(id.matches("^[0-9]+$")) {
-            return model.searchStudentList(id);
+            view.addDataToOutputText(model.searchStudentList(id));
         }else if (id.matches("^[a-zA-Z\\-.']*$")) {
-            return model.searchStudentList(id);
+            view.addDataToOutputText(model.searchStudentList(id));
         }else {
-            return "Not allowed symbols detected. :(";
+            view.addDataToOutputText("Not allowed symbols detected. :(");
         }
     }
 
     private void contrAddLogToview() {
         view.addLogToOutput(model.getLatestJSONLOG());
+    }
+
+    void inputLOG() {
+        model.inputNewDateLog(model.getLatestJSONLOG());
     }
 }

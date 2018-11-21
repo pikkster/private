@@ -14,21 +14,21 @@ public class Student {
         this.name = name;
         this.ID = ID;
         acc = new ArrayList<>();
-    }
+        setPrivate_key();
 
+    }
     public String getName() {
         return this.name;
     }
     public int getID () {
         return this.ID;
     }
-    public void setPrivate_key () {
+    private void setPrivate_key () {
         this.private_key = (long) (Math.random()*Short.MAX_VALUE);
     }
     public long getPrivate_key () {
         return this.private_key;
     }
-
     public String toString () {
         return this.name + " " + this.ID;
     }
