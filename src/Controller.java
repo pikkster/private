@@ -18,7 +18,7 @@ class Controller {
     Controller(){
         model = new Model();
         //model.jsonEntities("files/JSONentities");
-        model.jsonEntities("files/JSONtest");
+        model.jsonEntities("files/entities_JSON.json");
 
         view = new View(this);
         createPersons();
@@ -85,7 +85,7 @@ class Controller {
     }
     //used for creating any data at all
     private void createPersons() {
-        model.createNewPerson();
+        model.createPersonsAtStart();
     }
     /*
     END OF SIMULATION
@@ -142,9 +142,9 @@ class Controller {
     }
 
     void inputLOG() {
-        model.inputNewDateLog(model.getLatestJSONLOG());
+        model.inputNewDateLog();
     }
     void temporaryFunction() {
-        model.searchLogFiles();
+//
     }
 }

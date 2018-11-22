@@ -1,6 +1,7 @@
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,42 +53,63 @@ class Model {
                 "Private Key: "+ timeLog.get("Private Key").toString() + "\n\n" +
                 "//////////////////////////////////////////\n\n";
     }
+
     String getLatestJSONLOG () {
         return outputJSONLOG;
     }
-    private void appendLogToFile(String date) {
+
+    private void appendLogToFile(String date, File file) {
         try {
             BufferedWriter out = new BufferedWriter(
-                    new FileWriter("files/temp_logs",true));
-            out.write("test String\na$$\n" + date);
+                    new FileWriter(file,true));
+            out.write(date + "\n" + getLatestJSONLOG());
             out.close();
         } catch (Exception we) {
             //
         }
     }
 
-    void searchLogFiles() {
+    File searchLogFiles(String date) {
         //search log folder to find .json with correct date and then call appendToLogFile()
-        File dir = new File("files");
+        File dir = new File("logs");
         File[] matches = dir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.startsWith("temp");
+                return name.startsWith(date);
             }
         });
         if (matches != null) {
             for (File f : matches) {
                 System.out.println(f.toString());
+                return f;
             }
         } else {
             System.out.println("error");
         }
+        return null;
     }
 
-    void inputNewDateLog (String date) {
+    void inputNewDateLog () {
         //not used at the moment, to be...
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDate date = currentTime.toLocalDate();
+        try {
 
-        appendLogToFile(date);
+            File existingLogFile = searchLogFiles(String.valueOf(date));
+            if (existingLogFile == null) {
+                String fileSeparator = System.getProperty("file.separator");
+                String newLogFile = "logs" + fileSeparator + date;
+
+                File logFile = new File(newLogFile);
+                if (logFile.createNewFile()) {
+                    appendLogToFile(String.valueOf(date),logFile);
+                }
+            } else {
+                appendLogToFile(String.valueOf(date),existingLogFile);
+            }
+        } catch (Exception ee) {
+//
+        }
     }
 
     void inputLog(String date, Student event, String time, Door door, boolean granted) {
@@ -130,21 +152,27 @@ class Model {
     }
 
     //for creating a person, now used for creating all
-    void createNewPerson() {
+    void createPersonsAtStart() {
+        String fileSeparator = System.getProperty("file.separator");
         try {
-            BufferedReader br = new BufferedReader(new FileReader("files/students"));
-            String line;
-            int id_number = 0;
-            while ((line = br.readLine()) != null) {
-                Student student = new Student(line,++id_number);
+            String content = new String(Files.readAllBytes(Paths
+                    .get("files" + fileSeparator + "JSON_students.json")));
+            JSONObject jsonObject = new JSONObject(content);
+
+            String[] ID = getNames(jsonObject.getJSONObject("Student"));
+
+            for(String s : ID) {
+                Student student = new Student(
+                        jsonObject.getJSONObject("Student").getJSONObject(s).getString("Name"),
+                        jsonObject.getJSONObject("Student").getJSONObject(s).getInt("ID"));
                 listOfPersons.add(student);
             }
-            br.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            createJSONstudents();
+//            createJSONstudents();
         } catch (Exception wewe) {
             //
         }
@@ -185,10 +213,10 @@ class Model {
                     .put("Key", s.getPrivate_key());
         }
 
-        BufferedWriter out = new BufferedWriter(
+        /*BufferedWriter out = new BufferedWriter(
                 new FileWriter("files" + fileSeparator + "JSON_students.json"));
         out.write(jsonObject.toString(2));
-        out.close();
+        out.close();*/
 //        System.out.println(jsonObject.toString(2));
 
     }
