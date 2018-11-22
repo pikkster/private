@@ -10,6 +10,7 @@ import java.util.Map;
 import AccessPoints.*;
 import Person.*;
 import org.json.JSONObject;
+import org.json.JSONWriter;
 
 import static org.json.JSONObject.getNames;
 
@@ -38,7 +39,7 @@ class Model {
 
     }
 
-    public void addLog(JSONObject timeLog, String time) {
+    private void addLog(JSONObject timeLog, String time) {
         //System.out.println(timeLog.toString(2));
 
         outputJSONLOG = "Time: " + time + "\n" +
@@ -54,7 +55,7 @@ class Model {
     String getLatestJSONLOG () {
         return outputJSONLOG;
     }
-    void appendLogToFile (String date) {
+    private void appendLogToFile(String date) {
         try {
             BufferedWriter out = new BufferedWriter(
                     new FileWriter("files/temp_logs",true));
@@ -65,8 +66,22 @@ class Model {
         }
     }
 
-    private void searchLogFiles() {
-        //searcg log folder to find .json with correct date and then call appendToLogFile()
+    void searchLogFiles() {
+        //search log folder to find .json with correct date and then call appendToLogFile()
+        File dir = new File("files");
+        File[] matches = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.startsWith("temp");
+            }
+        });
+        if (matches != null) {
+            for (File f : matches) {
+                System.out.println(f.toString());
+            }
+        } else {
+            System.out.println("error");
+        }
     }
 
     void inputNewDateLog (String date) {
@@ -128,6 +143,54 @@ class Model {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        try {
+            createJSONstudents();
+        } catch (Exception wewe) {
+            //
+        }
+    }
+
+    private void createJSONstudents () throws Exception{
+        String fileSeparator = System.getProperty("file.separator");
+        String pathToLogFolder = "files" + fileSeparator + "JSON_students.json";
+
+        File file = new File(pathToLogFolder);
+        if (file.createNewFile()) {
+//            System.out.println("File created");
+            BufferedWriter out = new BufferedWriter(
+                    new FileWriter("files" + fileSeparator + "JSON_students.json",true));
+
+            new JSONWriter(out)
+                    .object()
+                    .key("Student")
+                    .object()
+                    .endObject()
+                    .endObject();
+            out.close();
+        } else {
+//            System.out.println("EXIST");
+        }
+
+        String content = new String(Files.readAllBytes(Paths
+                .get("files" + fileSeparator + "JSON_students.json")));
+        JSONObject jsonObject  = new JSONObject(content);
+//        System.out.println(jsonObject.toString(2));
+
+        JSONObject student = jsonObject.getJSONObject("Student");
+        for (Student s : listOfPersons) {
+            student.put(Integer.toString(s.getID()),new JSONObject());
+            student.getJSONObject(Integer.toString(s.getID()))
+                    .put("Name",s.getName())
+                    .put("ID", s.getID())
+                    .put("Key", s.getPrivate_key());
+        }
+
+        BufferedWriter out = new BufferedWriter(
+                new FileWriter("files" + fileSeparator + "JSON_students.json"));
+        out.write(jsonObject.toString(2));
+        out.close();
+//        System.out.println(jsonObject.toString(2));
+
     }
 
     //returns list of all persons
@@ -163,7 +226,6 @@ class Model {
         }
         return String.valueOf(sb);
     }
-
 
     //for searching or retreiving
     String searchStudentList (String id_name) {

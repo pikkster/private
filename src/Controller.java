@@ -17,7 +17,8 @@ class Controller {
 
     Controller(){
         model = new Model();
-        model.jsonEntities("files/JSONentities");
+        //model.jsonEntities("files/JSONentities");
+        model.jsonEntities("files/JSONtest");
 
         view = new View(this);
         createPersons();
@@ -142,5 +143,8 @@ class Controller {
 
     void inputLOG() {
         model.inputNewDateLog(model.getLatestJSONLOG());
+    }
+    void temporaryFunction() {
+        model.searchLogFiles();
     }
 }
