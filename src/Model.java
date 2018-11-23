@@ -3,10 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import AccessPoints.*;
 import Person.*;
@@ -25,8 +22,15 @@ class Model {
     private Map<Long, Student> listOfKeys;
     //jsonobject to keep store of all logs
     private JSONObject mainJSONLog;
+
     private String outputJSONLOG;
+
     private JSONObject entitiesJSONdata;
+
+//    keep track of current date
+    private LocalDateTime currentTime;
+
+    private Stack<JSONObject> logStack;
 
     //CONSTRUCTOR
     Model() {
@@ -35,9 +39,9 @@ class Model {
         listOfKeys  = new HashMap();
 
         mainJSONLog = new JSONObject().put("Logs", new JSONObject());
-        LocalDateTime currentTime = LocalDateTime.now();
+        currentTime = LocalDateTime.now();
         mainJSONLog.getJSONObject("Logs").put(currentTime.toLocalDate().toString(), new JSONObject());
-
+        logStack = new Stack<>();
     }
 
     private void addLog(JSONObject timeLog, String time) {
@@ -52,24 +56,45 @@ class Model {
                 "ID: "+ timeLog.get("ID").toString() + "\n" +
                 "Private Key: "+ timeLog.get("Private Key").toString() + "\n\n" +
                 "//////////////////////////////////////////\n\n";
+        /*JSONObject test = new JSONObject().put("Time",time)
+                .put("Door",timeLog.getString("Door"))
+                .put("Door-ID",timeLog.getInt("Door-ID"))
+                .put("Granted", timeLog.getBoolean("Granted"))
+                .put("Name",timeLog.getString("Name"))
+                .put("ID",timeLog.getInt("ID"))
+                .put("Private Key",timeLog.getLong("Private Key"));*/
+
+
     }
 
     String getLatestJSONLOG () {
         return outputJSONLOG;
     }
+//    @logStack temporary location for logs to be written to log file
+//    Clear @logStack after each request to write to file
+//
+    void addToLogStack (JSONObject timeLog) {
+            logStack.push(timeLog);
+    }
+    void clearLogStack () {
+        logStack.clear();
+    }
 
-    private void appendLogToFile(String date, File file) {
+    private void appendLogToFile(File file) {
         try {
             BufferedWriter out = new BufferedWriter(
                     new FileWriter(file,true));
-            out.write(date + "\n" + getLatestJSONLOG());
+            for (JSONObject js : logStack) {
+                out.write(js.toString(2) + "\n");
+            }
+//            out.write(getLatestJSONLOG());
             out.close();
         } catch (Exception we) {
             //
         }
     }
 
-    File searchLogFiles(String date) {
+    private File searchLogFiles(String date) {
         //search log folder to find .json with correct date and then call appendToLogFile()
         File dir = new File("logs");
         File[] matches = dir.listFiles(new FilenameFilter() {
@@ -90,22 +115,19 @@ class Model {
     }
 
     void inputNewDateLog () {
-        //not used at the moment, to be...
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDate date = currentTime.toLocalDate();
         try {
 
-            File existingLogFile = searchLogFiles(String.valueOf(date));
+            File existingLogFile = searchLogFiles(String.valueOf(getCurrentTime().toLocalDate()));
             if (existingLogFile == null) {
                 String fileSeparator = System.getProperty("file.separator");
-                String newLogFile = "logs" + fileSeparator + date;
+                String newLogFile = "logs" + fileSeparator + String.valueOf(getLocalDate());
 
                 File logFile = new File(newLogFile);
                 if (logFile.createNewFile()) {
-                    appendLogToFile(String.valueOf(date),logFile);
+                    appendLogToFile(logFile);
                 }
             } else {
-                appendLogToFile(String.valueOf(date),existingLogFile);
+                appendLogToFile(existingLogFile);
             }
         } catch (Exception ee) {
 //
@@ -124,7 +146,9 @@ class Model {
         timeLog.put("Name",event.getName());
         timeLog.put("ID", event.getID());
         timeLog.put("Private Key", event.getPrivate_key());
+        timeLog.put("Time",time);
         addLog(timeLog, time);
+        addToLogStack(timeLog);
         /*
             FOR DEBUGGING JSON DATA
          */
@@ -171,13 +195,14 @@ class Model {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try {
+/*        try {
 //            createJSONstudents();
         } catch (Exception wewe) {
             //
-        }
+        }*/
     }
 
+//    only used for creation of the initial json_students.json file
     private void createJSONstudents () throws Exception{
         String fileSeparator = System.getProperty("file.separator");
         String pathToLogFolder = "files" + fileSeparator + "JSON_students.json";
@@ -306,6 +331,18 @@ class Model {
                     newDoor.getInt("Y-pos"));
             entities.add(door);
         }
+    }
+
+    void setCurrentDate() {
+        currentTime = LocalDateTime.now();
+        LocalDate date = currentTime.toLocalDate();
+    }
+
+    public LocalDate getLocalDate() {
+        return currentTime.toLocalDate();
+    }
+    public LocalDateTime getCurrentTime (){
+        return currentTime;
     }
 
 }
