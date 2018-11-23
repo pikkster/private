@@ -79,6 +79,9 @@ class Model {
     void clearLogStack () {
         logStack.clear();
     }
+    Stack<JSONObject> getLogStack () {
+        return logStack;
+    }
 
     private void appendLogToFile(File file) {
         try {
@@ -87,7 +90,7 @@ class Model {
             for (JSONObject js : logStack) {
                 out.write(js.toString(2) + "\n");
             }
-//            out.write(getLatestJSONLOG());
+            clearLogStack();
             out.close();
         } catch (Exception we) {
             //
@@ -116,7 +119,6 @@ class Model {
 
     void inputNewDateLog () {
         try {
-
             File existingLogFile = searchLogFiles(String.valueOf(getCurrentTime().toLocalDate()));
             if (existingLogFile == null) {
                 String fileSeparator = System.getProperty("file.separator");
@@ -143,16 +145,23 @@ class Model {
         timeLog.put("Door-ID", door.getId());
         timeLog.put("Door-key", door.getKey());
         timeLog.put("Granted", granted);
-        timeLog.put("Name",event.getName());
+        timeLog.put("Name",event.getFirstName());
         timeLog.put("ID", event.getID());
         timeLog.put("Private Key", event.getPrivate_key());
         timeLog.put("Time",time);
+
         addLog(timeLog, time);
         addToLogStack(timeLog);
+        automatedLogWriter();
         /*
             FOR DEBUGGING JSON DATA
          */
         //System.out.println(mainJSONLog.toString(2)+ " \n");
+    }
+    private void automatedLogWriter () {
+        if(logStack.size() >= 10){
+            inputNewDateLog();
+        }
     }
 
 
@@ -202,6 +211,12 @@ class Model {
         }*/
     }
 
+    void inputLastNames () {
+//        CREATE RANDOM LASTNAMES FOR THE EXISTING STUDENTS
+//        student.setSurname();
+//        write to JSON_students.json
+    }
+
 //    only used for creation of the initial json_students.json file
     private void createJSONstudents () throws Exception{
         String fileSeparator = System.getProperty("file.separator");
@@ -233,7 +248,7 @@ class Model {
         for (Student s : listOfPersons) {
             student.put(Integer.toString(s.getID()),new JSONObject());
             student.getJSONObject(Integer.toString(s.getID()))
-                    .put("Name",s.getName())
+                    .put("Name",s.getFirstName())
                     .put("ID", s.getID())
                     .put("Key", s.getPrivate_key());
         }
@@ -272,7 +287,7 @@ class Model {
         StringBuilder sb = new StringBuilder();
         for (Student s : getAllStudents()) {
             sb.append("Name: ")
-                    .append(s.getName())
+                    .append(s.getFirstName())
                     .append("\nID: ")
                     .append(s.getID())
                     .append("\n-------------------\n");
@@ -286,14 +301,14 @@ class Model {
         if (id_name.matches("^[0-9]+$")) {
             for (Student s : listOfPersons) {
                 if (s.getID() == Integer.parseInt(id_name)) {
-                    return "Name: " + s.getName() + "\nID: " + s.getID();
+                    return "Name: " + s.getFirstName() + "\nID: " + s.getID();
                 }
             }
         }
         for (Student s: listOfPersons) {
-            if (s.getName().equals(id_name)) {
+            if (s.getFirstName().toLowerCase().equals(id_name.toLowerCase())) {
                sb.append("Name: ")
-                       .append(s.getName())
+                       .append(s.getFirstName())
                        .append("\nID: ")
                        .append(s.getID())
                        .append("\n\n");
@@ -335,7 +350,6 @@ class Model {
 
     void setCurrentDate() {
         currentTime = LocalDateTime.now();
-        LocalDate date = currentTime.toLocalDate();
     }
 
     public LocalDate getLocalDate() {

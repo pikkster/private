@@ -144,6 +144,8 @@ class Controller {
     void inputLOG() {
         model.inputNewDateLog();
     }
+
+
     void temporaryFunction() {
 //
     }
